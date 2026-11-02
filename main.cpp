@@ -2,82 +2,172 @@
 
 using namespace std;
 
-constexpr int row = 5, col = 5;
+class State {
+public:
+    char live = '@';
+    char dead = '~';
+};
 
-char deadCell = '~';
-char liveCell = '@';
+class Grid {
+    static const int ROWS = 5;
+    static const int COLS = 5;
 
-int neighbourCount(char grid[][col], int r, int c) {
+    char cells[ROWS][COLS];
+
+public:
+    int getRows() { return ROWS; }
+    int getCols() { return COLS; }
+
+    char getCells(int r, int c) { return cells[r][c]; }
+
+    void setLiveCells(int row, int col, State cell) {
+        cells[row][col] = cell.live;
+    }
+
+    void setDeadCells(int row, int col, State cell) {
+        cells[row][col] = cell.dead;
+    }
+
+    void set(State cell) {
+        for (int i = 0; i < ROWS; i++) {
+            for (int j = 0; j < COLS; j++) {
+                cells[i][j] = cell.dead;
+            }
+        }
+    }
+
+    void print() {
+        for (int i = 0; i < ROWS; i++) {
+            for (int j = 0; j < COLS; j++) {
+                cout << cells[i][j] << " ";
+            }
+            cout << endl;
+        }
+    }
+};
+
+void setBlinker(Grid& grid, State cell) {
+    for (int i = 0; i < grid.getRows(); i++) {
+        for (int j = 0; j < grid.getCols(); j++) {
+            if (j == 2) {
+                if (i == 1 || i == 2 || i == 3) {
+                    grid.setLiveCells(i, j, cell);
+                }
+            }
+        }
+    }
+}
+
+int neighbourCount(Grid& grid, State cell, int r, int c) {
     int neighbours = 0;
 
-    if (grid[r - 1][c - 1] == '@') { neighbours++; }
-    if (grid[r - 1][c] == '@') { neighbours++; }
-    if (grid[r - 1][c + 1] == '@') { neighbours++; }
+    if (r == 0 && c == 0) {
+        if (grid.getCells(r, c + 1) == cell.live) { neighbours++; }
+        if (grid.getCells(r + 1, c) == cell.live) { neighbours++; }
+        if (grid.getCells(r + 1, c + 1) == cell.live) { neighbours++; }
+    }
+    else if (r == grid.getRows() - 1 && c == grid.getCols() - 1) {
+        if (grid.getCells(r - 1, c - 1) == cell.live) { neighbours++; }
+        if (grid.getCells(r - 1, c) == cell.live) { neighbours++; }
+        if (grid.getCells(r, c - 1) == cell.live) { neighbours++; }
+    }
+    else if (r == 0) {
+        if (c == grid.getCols() - 1) {
+            if (grid.getCells(r, c - 1) == cell.live) { neighbours++; }
+            if (grid.getCells(r + 1, c - 1) == cell.live) { neighbours++; }
+            if (grid.getCells(r + 1, c) == cell.live) { neighbours++; }
+        }
+        else {
+            if (grid.getCells(r, c - 1) == cell.live) { neighbours++; }
+            if (grid.getCells(r, c + 1) == cell.live) { neighbours++; }
 
-    if (grid[r][c - 1] == '@') { neighbours++; }
-    if (grid[r][c + 1] == '@') { neighbours++; }
+            if (grid.getCells(r + 1, c - 1) == cell.live) { neighbours++; }
+            if (grid.getCells(r + 1, c) == cell.live) { neighbours++; }
+            if (grid.getCells(r + 1, c + 1) == cell.live) { neighbours++; }
+        }
+    }
+    else if (c == 0) {
+        if (r == grid.getRows() - 1) {
+            if (grid.getCells(r - 1, c) == cell.live) { neighbours++; }
+            if (grid.getCells(r - 1, c + 1) == cell.live) { neighbours++; }
+            if (grid.getCells(r, c + 1) == cell.live) { neighbours++; }
+        }
+        else {
+            if (grid.getCells(r - 1, c) == cell.live) { neighbours++; }
+            if (grid.getCells(r - 1, c + 1) == cell.live) { neighbours++; }
+            if (grid.getCells(r, c + 1) == cell.live) { neighbours++; }
+            if (grid.getCells(r + 1, c) == cell.live) { neighbours++; }
+            if (grid.getCells(r + 1, c + 1) == cell.live) { neighbours++; }
+        }
+    }
+    else if (r == grid.getRows() - 1) {
+        if (grid.getCells(r - 1, c - 1) == cell.live) { neighbours++; }
+        if (grid.getCells(r - 1, c) == cell.live) { neighbours++; }
+        if (grid.getCells(r - 1, c + 1) == cell.live) { neighbours++; }
+        if (grid.getCells(r, c - 1) == cell.live) { neighbours++; }
+        if (grid.getCells(r, c + 1) == cell.live) { neighbours++; }
+    }
+    else if (c == grid.getCols() - 1) {
+        if (grid.getCells(r - 1, c - 1) == cell.live) { neighbours++; }
+        if (grid.getCells(r - 1, c) == cell.live) { neighbours++; }
+        if (grid.getCells(r, c - 1) == cell.live) { neighbours++; }
+        if (grid.getCells(r + 1, c - 1) == cell.live) { neighbours++; }
+        if (grid.getCells(r + 1, c) == cell.live) { neighbours++; }
+    }
+    else {
+        if (grid.getCells(r - 1, c - 1) == cell.live) { neighbours++; }
+        if (grid.getCells(r - 1, c) == cell.live) { neighbours++; }
+        if (grid.getCells(r - 1, c + 1) == cell.live) { neighbours++; }
 
-    if (grid[r + 1][c - 1] == '@') { neighbours++; }
-    if (grid[r + 1][c] == '@') { neighbours++; }
-    if (grid[r + 1][c + 1] == '@') { neighbours++; }
+        if (grid.getCells(r, c - 1) == cell.live) { neighbours++; }
+        if (grid.getCells(r, c + 1) == cell.live) { neighbours++; }
+
+        if (grid.getCells(r + 1, c - 1) == cell.live) { neighbours++; }
+        if (grid.getCells(r + 1, c) == cell.live) { neighbours++; }
+        if (grid.getCells(r + 1, c + 1) == cell.live) { neighbours++; }
+    }
 
     return neighbours;
 }
 
-void setBlinker(char grid[][col], int i, int j) {
-    if (j == 2) {
-        if (i == 1 || i == 2 || i == 3) {
-            grid[i][j] = liveCell;
+void rulesImplementation(Grid& first, Grid& second, State cell) {
+    for (int i = 0; i < first.getRows(); i++) {
+        for (int j = 0; j < first.getCols(); j++) {
+            int neighbours = neighbourCount(first, cell, i, j);
+
+            if (neighbours != 3 && first.getCells(i, j) == cell.dead) { second.setDeadCells(i, j, cell); }
+            if ((neighbours < 2 || neighbours > 3) && first.getCells(i, j) == cell.live) { second.setDeadCells(i, j, cell); }
+            if ((neighbours == 2 || neighbours == 3) && first.getCells(i, j) == cell.live)  { second.setLiveCells(i, j, cell); }
+            if (neighbours == 3 && first.getCells(i, j) == cell.dead) { second.setLiveCells(i, j, cell); }
         }
     }
 }
 
-void setGrid(char grid1[][col], char grid2[][col]) {
-    for (int i = 0; i < row; i++) {
-        for (int j = 0; j < col; j++) {
-            grid1[i][j] = deadCell;
-            grid2[i][j] = deadCell;
+void printSteps(int steps, Grid first, Grid second, State cell) {
+    for (int i = 0; i < steps; i++) {
+        cout << "11111" << endl;
+        first.print();
+        rulesImplementation(first, second, cell);
+        cout << endl;
 
-            setBlinker(grid1, i, j);
-        }
-    }
-}
-
-void rulesImplementation(char grid1[][col], char grid2[][col]) {
-    for (int i = 0; i < row; i++) {
-        for (int j = 0; j < col; j++) {
-            int neighbours = neighbourCount(grid1, i, j);
-
-            if ((neighbours < 2 || neighbours > 3) && grid1[i][j] == liveCell) { grid2[i][j] = deadCell; }
-            if ((neighbours == 2 || neighbours == 3) && grid1[i][j] == liveCell)  { grid2[i][j] = liveCell; }
-            if (neighbours == 3 && grid1[i][j] == deadCell) { grid2[i][j] = liveCell; }
-        }
-    }
-}
-
-void printGrid(char grid[][col]) {
-    for (int i = 0; i < row; i++) {
-        for (int j = 0; j < col; j++) {
-            cout << grid[i][j] << " ";
-        }
+        cout << "22222" << endl;
+        second.print();
+        rulesImplementation(second, first, cell);
         cout << endl;
     }
 }
 
 int main() {
-    char grid1[row][col], grid2[row][col];
+    State cell;
 
-    setGrid(grid1, grid2);
-    rulesImplementation(grid1, grid2);
+    Grid first;
+    Grid second;
 
-    printGrid(grid1);
-    cout << endl;
-    printGrid(grid2);
+    first.set(cell);
+    second.set(cell);
+    setBlinker(first, cell);
 
-    rulesImplementation(grid2, grid1);
+    printSteps(2, first, second, cell);
 
-    cout << endl;
-    printGrid(grid1);
-    
     return 0;
 }
