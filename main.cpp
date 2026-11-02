@@ -57,6 +57,15 @@ void setBlinker(Grid& grid, State cell) {
         }
     }
 }
+void setGlider(Grid& grid, State cell) {
+    for (int i = 0; i < grid.getRows(); i++) {
+        for (int j = 0; j < grid.getCols(); j++) {
+            if (i == 0 && j == 1) { grid.setLiveCells(i, j, cell); }
+            if (i == 1 && j == 2) { grid.setLiveCells(i, j, cell); }
+            if (i == 2 && (j == 0 || j == 1 || j == 2)) { grid.setLiveCells(i, j, cell); }
+        }
+    }
+}
 
 int neighbourCount(Grid& grid, State cell, int r, int c) {
     int neighbours = 0;
@@ -143,18 +152,10 @@ void rulesImplementation(Grid& first, Grid& second, State cell) {
     }
 }
 
-void printSteps(int steps, Grid first, Grid second, State cell) {
-    for (int i = 0; i < steps; i++) {
-        cout << "11111" << endl;
-        first.print();
-        rulesImplementation(first, second, cell);
-        cout << endl;
-
-        cout << "22222" << endl;
-        second.print();
-        rulesImplementation(second, first, cell);
-        cout << endl;
-    }
+void nextGeneration(Grid& first, Grid& second, State cell) {
+    first.print();
+    rulesImplementation(first, second, cell);
+    cout << endl;
 }
 
 int main() {
@@ -165,9 +166,14 @@ int main() {
 
     first.set(cell);
     second.set(cell);
-    setBlinker(first, cell);
+    // setBlinker(first, cell);
+    setGlider(first, cell);
 
-    printSteps(2, first, second, cell);
+    nextGeneration(first, second, cell);
+    nextGeneration(second, first, cell);
+    nextGeneration(first, second, cell);
+    nextGeneration(second, first, cell);
+    nextGeneration(first, second, cell);
 
     return 0;
 }
