@@ -1,48 +1,8 @@
 #include <iostream>
-#include <vector>
+#include "CellState.h"
+#include "Grid.h"
 
 using namespace std;
-
-class State {
-public:
-    char live = '@';
-    char dead = '~';
-};
-
-class Grid {
-    std::vector<std::vector<char>> grid;
-
-public:
-    int getRows() const { return grid.size(); }
-    int getCols() const { return grid[0].size(); }
-    char getGrid(int row, int col) const { return grid[row][col]; }
-    void setGrid(int row, int col) { grid.resize(row, vector<char>(col, ' ')); }
-
-    void setLiveCells(const int row, const int col, const State cell) {
-        grid[row][col] = cell.live;
-    }
-
-    void setDeadCells(const int row, const int col, const State cell) {
-        grid[row][col] = cell.dead;
-    }
-
-    void setAllDead(const State cell) {
-        for (int i = 0; i < getRows(); i++) {
-            for (int j = 0; j < getCols(); j++) {
-                grid[i][j] = cell.dead;
-            }
-        }
-    }
-
-    void print() const {
-        for (int i = 0; i < getRows(); i++) {
-            for (int j = 0; j < getCols(); j++) {
-                cout << grid[i][j] << " ";
-            }
-            cout << endl;
-        }
-    }
-};
 
 void setBlinker(Grid& grid, State cell) {
     for (int i = 0; i < grid.getRows(); i++) {
@@ -164,16 +124,15 @@ void nextGeneration(Grid& first, Grid& second, State cell) {
     cout << endl;
 }
 
-
 int main() {
-    int r, c;
-    cout << "enter row then col" << endl;
-    cin >> r >> c;
-
     State cell;
 
     Grid first;
     Grid second;
+
+    int r, c;
+    cout << "Enter row then col" << endl;
+    cin >> r >> c;
 
     first.setGrid(r, c);
     second.setGrid(r, c);

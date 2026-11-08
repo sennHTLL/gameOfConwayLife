@@ -3,4 +3,6 @@ project(gameOfConwayLife)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(gameOfConwayLife main.cpp)
+add_executable(gameOfConwayLife main.cpp
+        CellState.h
+        Grid.h)
