@@ -1,18 +1,9 @@
 #include <QtWidgets>
 #include "CellState.h"
 #include "Grid.h"
-#include "Rules.h"
-
-constexpr int N = 30;
-constexpr int W = 15;
-constexpr int H = 15;
-constexpr int START_X = 10;
-constexpr int START_Y = 20;
-constexpr int DENSITY = 30;
-
-const QPen greenPen(Qt::darkGray);
-const QBrush greenBrush(Qt::green);
-const QBrush transparentBrush(Qt::transparent);
+#include "SimulationConfig.h"
+#include "SimulationBrushes.h"
+#include "SimulationOperations.h"
 
 class MyGrid : public QGraphicsScene {
     Grid* cellGrid;
@@ -73,54 +64,6 @@ static void createGridScene(MyGrid* myGrid) {
     }
 }
 
-static void updateGridScene(MyGrid &myGrid, Grid &grid, const State &cellState) {
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < N; j++) {
-            const int pointX = START_X + j * W;
-            const int pointY = START_Y + i * H;
-            QPointF point(pointX + W / 2, pointY + H / 2);
-
-            QGraphicsItem* iPoint = myGrid.itemAt(point, QTransform());
-            auto* rectItem = qgraphicsitem_cast<QGraphicsRectItem*>(iPoint);
-
-            if (grid.getGrid(i, j) == cellState.live && rectItem != nullptr) {
-                rectItem->setBrush(greenBrush);
-            }
-            if (grid.getGrid(i, j) == cellState.dead && rectItem != nullptr) {
-                rectItem->setBrush(transparentBrush);
-            }
-        }
-    }
-}
-
-static void performStep(MyGrid &myGrid, Grid &firstGrid, Grid &secondGrid, const State &cellState) {
-    nextGeneration(firstGrid, secondGrid, cellState);
-    updateGridScene(myGrid, secondGrid, cellState);
-    firstGrid = secondGrid;
-}
-
-static void clearGrid(MyGrid &myGrid, Grid &firstGrid, Grid &secondGrid, const State &cellState) {
-    firstGrid.setAllDead(cellState);
-    secondGrid.setAllDead(cellState);
-    updateGridScene(myGrid, firstGrid, cellState);
-}
-
-static void randomizeGrid(MyGrid &myGrid, Grid &grid, const State &cellState) {
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < N; j++) {
-            int randomNumber = QRandomGenerator::global()->bounded(100);
-
-            if (randomNumber < DENSITY) {
-                grid.setLiveCells(i, j, cellState);
-            } else {
-                grid.setDeadCells(i, j, cellState);
-            }
-        }
-    }
-
-    updateGridScene(myGrid, grid, cellState);
-}
-
 static QHBoxLayout* buttonPlace(MyGrid &myGrid, QWidget *widget, Grid &firstGrid, Grid &secondGrid, const State &cellState) {
     auto* btnStart = new QPushButton("start", widget);
     auto* btnStop = new QPushButton("stop", widget);
@@ -130,7 +73,7 @@ static QHBoxLayout* buttonPlace(MyGrid &myGrid, QWidget *widget, Grid &firstGrid
 
     auto* timer = new QTimer(widget);
     QObject::connect(timer, &QTimer::timeout, widget, [&] {
-        performStep(myGrid, firstGrid, secondGrid, cellState);
+        performGridStep(myGrid, firstGrid, secondGrid, cellState);
     });
 
     QPushButton::connect(btnStart, &QPushButton::clicked, widget, [timer] {
@@ -145,18 +88,18 @@ static QHBoxLayout* buttonPlace(MyGrid &myGrid, QWidget *widget, Grid &firstGrid
 
     QPushButton::connect(btnStep, &QPushButton::clicked, widget, [&] {
         std::cout << "step" << std::endl;
-        performStep(myGrid, firstGrid, secondGrid, cellState);
+        performGridStep(myGrid, firstGrid, secondGrid, cellState);
     });
 
     QPushButton::connect(btnClear, &QPushButton::clicked, widget, [&, timer] {
         std::cout << "clear" << std::endl;
         timer->stop();
-        clearGrid(myGrid, firstGrid, secondGrid, cellState);
+        clearGridScene(myGrid, firstGrid, secondGrid, cellState);
     });
 
     QPushButton::connect(btnRandom, &QPushButton::clicked, widget, [&] {
         std::cout << "random" << std::endl;
-        randomizeGrid(myGrid, firstGrid, cellState);
+        randomizeGridScene(myGrid, firstGrid, cellState);
     });
 
     auto* hLayout = new QHBoxLayout;

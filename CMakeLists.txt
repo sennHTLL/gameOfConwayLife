@@ -17,6 +17,10 @@ add_executable(gameOfConwayLife main.cpp
         CellState.h
         Grid.h
         Rules.h
+        SimulationOperations.cpp
+        SimulationOperations.h
+        SimulationConfig.h
+        SimulationBrushes.h
 )
 target_link_libraries(gameOfConwayLife
         Qt::Core
