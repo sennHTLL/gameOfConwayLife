@@ -32,10 +32,18 @@ inline void rulesImplementation(const Grid& first, Grid& second, const State cel
         for (int j = 0; j < first.getCols(); j++) {
             const int neighbours = neighbourCount(first, cell, i, j);
 
-            if (neighbours != 3 && first.getGrid(i, j) == cell.dead) { second.setDeadCells(i, j, cell); }
-            if ((neighbours < 2 || neighbours > 3) && first.getGrid(i, j) == cell.live) { second.setDeadCells(i, j, cell); }
-            if ((neighbours == 2 || neighbours == 3) && first.getGrid(i, j) == cell.live)  { second.setLiveCells(i, j, cell); }
-            if (neighbours == 3 && first.getGrid(i, j) == cell.dead) { second.setLiveCells(i, j, cell); }
+            char currentCell = first.getGrid(i, j);
+
+            bool b3 = neighbours == 3 && currentCell == cell.dead;
+            bool s23 = (neighbours == 2 || neighbours == 3) && currentCell == cell.live;
+            bool lonely = neighbours < 2 && currentCell == cell.live;
+            bool overpopulation = neighbours > 3 && currentCell == cell.live;
+            bool stillDead = neighbours != 3 && currentCell == cell.dead;
+
+            if (stillDead) { second.setDeadCells(i, j, cell); }
+            if (lonely || overpopulation) { second.setDeadCells(i, j, cell); }
+            if (s23)  { second.setLiveCells(i, j, cell); }
+            if (b3) { second.setLiveCells(i, j, cell); }
         }
     }
 }

@@ -16,7 +16,8 @@ find_package(Qt6 COMPONENTS
 add_executable(gameOfConwayLife main.cpp
         CellState.h
         Grid.h
-        Rules.h)
+        Rules.h
+)
 target_link_libraries(gameOfConwayLife
         Qt::Core
         Qt::Gui

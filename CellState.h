@@ -7,8 +7,8 @@
 
 class State {
 public:
-    char live = *"@";
-    char dead = *"~";
+    char live = '@';
+    char dead = '~';
 };
 
 #endif //GAMEOFCONWAYLIFE_CELLSTATE_H

@@ -11,13 +11,17 @@
 class Grid {
     std::vector<std::vector<char>> grid;
 public:
-    int getRows() const { return grid.size(); }
-    int getCols() const { return grid[0].size(); }
+    std::size_t getRows() const { return grid.size(); }
+
+    std::size_t getCols() const {
+        std::size_t cols = 0;
+        if (getRows() > 0) cols = grid[0].size();
+        return cols;
+    }
+
     char getGrid(const int row, const int col) const { return grid[row][col]; }
 
-    // void setGrid(int row, int col, char val) { grid[row][col] = val; }
-    // void setGrid(int row, int col) { grid[row][col] = ' '; }
-    void setGrid(const int row, const int col) { grid.resize(row, std::vector(col, ' ')); }
+    void setGrid(const int row, const int col) { grid.assign(row, std::vector<char>(col, ' ')); }
 
     void setLiveCells(const int row, const int col, const State cell) { grid[row][col] = cell.live; }
     void setDeadCells(const int row, const int col, const State cell) { grid[row][col] = cell.dead; }

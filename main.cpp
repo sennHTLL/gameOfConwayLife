@@ -8,6 +8,7 @@ constexpr int W = 15;
 constexpr int H = 15;
 constexpr int START_X = 10;
 constexpr int START_Y = 20;
+constexpr int DENSITY = 30;
 
 const QPen greenPen(Qt::darkGray);
 const QBrush greenBrush(Qt::green);
@@ -109,7 +110,7 @@ static void randomizeGrid(MyGrid &myGrid, Grid &grid, const State &cellState) {
         for (int j = 0; j < N; j++) {
             int randomNumber = QRandomGenerator::global()->bounded(100);
 
-            if (randomNumber < 30) {
+            if (randomNumber < DENSITY) {
                 grid.setLiveCells(i, j, cellState);
             } else {
                 grid.setDeadCells(i, j, cellState);
@@ -147,8 +148,9 @@ static QHBoxLayout* buttonPlace(MyGrid &myGrid, QWidget *widget, Grid &firstGrid
         performStep(myGrid, firstGrid, secondGrid, cellState);
     });
 
-    QPushButton::connect(btnClear, &QPushButton::clicked, widget, [&] {
+    QPushButton::connect(btnClear, &QPushButton::clicked, widget, [&, timer] {
         std::cout << "clear" << std::endl;
+        timer->stop();
         clearGrid(myGrid, firstGrid, secondGrid, cellState);
     });
 
