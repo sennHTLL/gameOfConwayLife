@@ -1,5 +1,5 @@
 //
-// Created by sen on 11/8/26.
+// Created by sen on 11/21/26.
 //
 
 #ifndef GAMEOFCONWAYLIFE_CELLSTATE_H
@@ -7,8 +7,8 @@
 
 class State {
 public:
-    char live = '@';
-    char dead = '~';
+    char live = *"@";
+    char dead = *"~";
 };
 
 #endif //GAMEOFCONWAYLIFE_CELLSTATE_H
