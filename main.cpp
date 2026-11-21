@@ -23,13 +23,17 @@ static void configureLiveCellStatistics(QLabel* lblLiveCells, Grid& firstGrid, c
 class MyGrid : public QGraphicsScene {
     Grid* cellGrid;
     State* cellState;
+    QLabel* lblGeneration;
     QLabel* lblLiveCells;
+    std::size_t* generationCount;
 
 public:
-    MyGrid(Grid* cellGrid, State* cellState, QLabel* lblLiveCells) {
+    MyGrid(Grid* cellGrid, State* cellState, QLabel* lblGeneration, QLabel* lblLiveCells, std::size_t* generationCount) {
         this->cellGrid = cellGrid;
         this->cellState = cellState;
         this->lblLiveCells = lblLiveCells;
+        this->lblGeneration = lblGeneration;
+        this->generationCount = generationCount;
     }
 
     void mousePressEvent(QGraphicsSceneMouseEvent *event) {
@@ -44,6 +48,8 @@ public:
             if (rectItem != nullptr && X >= 0 && X < N && Y >= 0 && Y < N) {
                 rectItem->setBrush(greenBrush);
                 cellGrid->setLiveCells(Y, X, *cellState);
+                *generationCount = 0;
+                configureGenerationStatistics(lblGeneration, *generationCount);
                 configureLiveCellStatistics(lblLiveCells, *cellGrid, *cellState);
                 // std::cout << X << " " << Y << " Changed to " << cellGrid->getGrid(Y, X) << std::endl;
             }
@@ -60,6 +66,8 @@ public:
             if (rectItem != nullptr && X >= 0 && X < N && Y >= 0 && Y < N) {
                 rectItem->setBrush(transparentBrush);
                 cellGrid->setDeadCells(Y, X, *cellState);
+                *generationCount = 0;
+                configureGenerationStatistics(lblGeneration, *generationCount);
                 configureLiveCellStatistics(lblLiveCells, *cellGrid, *cellState);
                 // std::cout << X << " " << Y << " Changed to " << cellGrid->getGrid(Y, X) << std::endl;
             }
@@ -137,8 +145,9 @@ static QHBoxLayout* buttonPlace(MyGrid &myGrid, QWidget *widget, Grid &firstGrid
         configureLiveCellStatistics(lblLiveCells, firstGrid, cellState);
     });
 
-    QPushButton::connect(btnRandom, &QPushButton::clicked, widget, [&, lblGeneration, lblLiveCells] {
+    QPushButton::connect(btnRandom, &QPushButton::clicked, widget, [&, timer, lblGeneration, lblLiveCells] {
         std::cout << "random" << std::endl;
+        timer->stop();
         randomizeGridScene(myGrid, firstGrid, cellState);
         generationCount = 0;
         configureGenerationStatistics(lblGeneration, generationCount);
@@ -231,7 +240,7 @@ int main(int argc, char *argv[]) {
     secondGrid.setGrid(N, N);
     secondGrid.setAllDead(cellState);
 
-    auto mainGrid = MyGrid(&firstGrid, &cellState, lblLiveCells);
+    auto mainGrid = MyGrid(&firstGrid, &cellState, lblGeneration, lblLiveCells, &generationCount);
     auto* mainLayout = new QVBoxLayout;
 
     window.setLayout(mainLayout);
