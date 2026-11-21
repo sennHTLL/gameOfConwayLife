@@ -18,5 +18,6 @@ constexpr int H = 15;
 constexpr int START_X = 10;
 constexpr int START_Y = 20;
 constexpr int DENSITY = 30;
+constexpr int MSEC = 1000;
 
 #endif //GAMEOFCONWAYLIFE_SIMULATIONSETTINGS_H

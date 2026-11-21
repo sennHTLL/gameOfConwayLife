@@ -54,4 +54,16 @@ inline void nextGeneration(const Grid& first, Grid& second, State cell) {
     // second.printGrid();
 }
 
+inline std::size_t countLiveCells(const Grid& grid, const State& cellState) {
+    std::size_t count = 0;
+
+    for (int i = 0; i < grid.getRows(); i++) {
+        for (int j = 0; j < grid.getCols(); j++) {
+            if (grid.getGrid(i, j) == cellState.live) { count++; }
+        }
+    }
+
+    return count;
+}
+
 #endif //GAMEOFCONWAYLIFE_RULES_H
