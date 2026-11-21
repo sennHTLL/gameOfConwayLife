@@ -2,8 +2,7 @@
 // Created by sen on 11/21/26.
 //
 #include "SimulationOperations.h"
-#include "SimulationConfig.h"
-#include "SimulationBrushes.h"
+#include "SimulationSettings.h"
 
 #include <qgraphicsitem.h>
 #include <qrandom.h>

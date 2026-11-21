@@ -1,8 +1,7 @@
 #include <QtWidgets>
 #include "CellState.h"
 #include "Grid.h"
-#include "SimulationConfig.h"
-#include "SimulationBrushes.h"
+#include "SimulationSettings.h"
 #include "SimulationOperations.h"
 
 class MyGrid : public QGraphicsScene {
