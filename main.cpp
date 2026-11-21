@@ -3,6 +3,7 @@
 #include "Grid.h"
 #include "SimulationSettings.h"
 #include "SimulationOperations.h"
+#include "Patterns.h"
 
 class MyGrid : public QGraphicsScene {
     Grid* cellGrid;
@@ -63,6 +64,21 @@ static void createGridScene(MyGrid* myGrid) {
     }
 }
 
+static QHBoxLayout* statisticPlace(MyGrid &myGrid, QWidget *widget, Grid &firstGrid, Grid &secondGrid, const State &cellState) {
+    QLabel* lblGeneration = new QLabel(widget);
+    QLabel* lblLiveCells = new QLabel(widget);
+
+    lblGeneration->setText("Поколение");
+    lblLiveCells->setText("Живых клеток");
+
+    auto* hLayout = new QHBoxLayout;
+
+    hLayout->addWidget(lblGeneration);
+    hLayout->addWidget(lblLiveCells);
+
+    return hLayout;
+}
+
 static QHBoxLayout* buttonPlace(MyGrid &myGrid, QWidget *widget, Grid &firstGrid, Grid &secondGrid, const State &cellState) {
     auto* btnStart = new QPushButton("start", widget);
     auto* btnStop = new QPushButton("stop", widget);
@@ -112,12 +128,49 @@ static QHBoxLayout* buttonPlace(MyGrid &myGrid, QWidget *widget, Grid &firstGrid
     return hLayout;
 }
 
-static void placeWidgets(QWidget* widget, MyGrid* grid, Grid* firstGrid, Grid* secondGrid, const State* cellState, QGraphicsView* view, QVBoxLayout* layout) {
-    createGridScene(grid);
-    view->setScene(grid);
+static QHBoxLayout* patternPlace(MyGrid& myGrid, QWidget *widget, Grid& firstGrid, Grid& secondGrid, const State& cellState) {
+    auto* btnBlock = new QPushButton("block", widget);
+    auto* btnBlinker = new QPushButton("blinker", widget);
+    auto* btnGlider = new QPushButton("glider", widget);
+
+    auto* timer = new QTimer(widget);
+
+    QPushButton::connect(btnBlock, &QPushButton::clicked, widget, [&, timer] {
+        timer->stop();
+        clearGridScene(myGrid, firstGrid, secondGrid, cellState);
+        placeBlock(myGrid, firstGrid, cellState);
+    });
+
+    QPushButton::connect(btnBlinker, &QPushButton::clicked, widget, [&, timer] {
+        timer->stop();
+        clearGridScene(myGrid, firstGrid, secondGrid, cellState);
+        placeBlinker(myGrid, firstGrid, cellState);
+    });
+
+    QPushButton::connect(btnGlider, &QPushButton::clicked, widget, [&, timer] {
+        timer->stop();
+        clearGridScene(myGrid, firstGrid, secondGrid, cellState);
+        placeGlider(myGrid, firstGrid, cellState);
+    });
+
+    auto* hLayout = new QHBoxLayout;
+
+    hLayout->addWidget(btnBlock);
+    hLayout->addWidget(btnBlinker);
+    hLayout->addWidget(btnGlider);
+
+    return hLayout;
+}
+
+static void placeWidgets(QWidget* widget, MyGrid* myGrid, Grid* firstGrid, Grid* secondGrid, const State* cellState, QGraphicsView* view, QVBoxLayout* layout) {
+    createGridScene(myGrid);
+    view->setScene(myGrid);
 
     layout->addWidget(view);
-    layout->addLayout(buttonPlace(*grid, widget, *firstGrid, *secondGrid, *cellState));
+
+    layout->addLayout(statisticPlace(*myGrid, widget, *firstGrid, *secondGrid, *cellState));
+    layout->addLayout(buttonPlace(*myGrid, widget, *firstGrid, *secondGrid, *cellState));
+    layout->addLayout(patternPlace(*myGrid, widget, *firstGrid, *secondGrid, *cellState));
 }
 
 int main(int argc, char *argv[]) {

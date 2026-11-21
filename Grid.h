@@ -19,12 +19,12 @@ public:
         return cols;
     }
 
-    char getGrid(const int row, const int col) const { return grid[row][col]; }
+    char getGrid(const std::size_t row, const std::size_t col) const { return grid[row][col]; }
 
-    void setGrid(const int row, const int col) { grid.assign(row, std::vector<char>(col, ' ')); }
+    void setGrid(const std::size_t row, const std::size_t col) { grid.assign(row, std::vector<char>(col, ' ')); }
 
-    void setLiveCells(const int row, const int col, const State cell) { grid[row][col] = cell.live; }
-    void setDeadCells(const int row, const int col, const State cell) { grid[row][col] = cell.dead; }
+    void setLiveCells(const std::size_t row, const std::size_t col, const State cell) { grid[row][col] = cell.live; }
+    void setDeadCells(const std::size_t row, const std::size_t col, const State cell) { grid[row][col] = cell.dead; }
 
     void setAllDead(const State cell) {
         for (int i = 0; i < getRows(); i++) {

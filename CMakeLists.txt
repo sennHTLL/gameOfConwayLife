@@ -20,6 +20,8 @@ add_executable(gameOfConwayLife main.cpp
         SimulationOperations.cpp
         SimulationOperations.h
         SimulationSettings.h
+        Patterns.cpp
+        Patterns.h
 )
 target_link_libraries(gameOfConwayLife
         Qt::Core

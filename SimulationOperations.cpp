@@ -9,7 +9,7 @@
 
 #include "Rules.h"
 
-static void updateGridScene(QGraphicsScene& myGrid, Grid &grid, const State &cellState) {
+void updateGridScene(QGraphicsScene& myGrid, Grid &grid, const State &cellState) {
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++) {
             const int pointX = START_X + j * W;
