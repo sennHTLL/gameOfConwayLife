@@ -103,13 +103,49 @@ static QHBoxLayout* statisticPlace(Grid& firstGrid, const State& cellState, QLab
     return hLayout;
 }
 
+static QVBoxLayout* densityControlPlace(QSpinBox* densityControl, QWidget* widget) {
+    densityControl->setRange(0, 100);
+    densityControl->setValue(30);
+    densityControl->setSuffix("%");
+
+    auto* hLayoutSpinBox = new QHBoxLayout;
+    hLayoutSpinBox->addWidget(densityControl);
+
+    auto* btnZero = new QPushButton("0", widget);
+    auto* btnThirty = new QPushButton("30", widget);
+    auto* btnFull = new QPushButton("100", widget);
+
+    QPushButton::connect(btnZero, &QPushButton::clicked, widget, [densityControl] {
+        densityControl->setValue(0);
+    });
+    QPushButton::connect(btnThirty, &QPushButton::clicked, widget, [densityControl] {
+        densityControl->setValue(30);
+    });
+    QPushButton::connect(btnFull, &QPushButton::clicked, widget, [densityControl] {
+        densityControl->setValue(100);
+    });
+
+    auto* hLayoutButtons = new QHBoxLayout;
+
+    hLayoutButtons->addWidget(btnZero);
+    hLayoutButtons->addWidget(btnThirty);
+    hLayoutButtons->addWidget(btnFull);
+
+    auto* vLayout = new QVBoxLayout;
+
+    vLayout->addLayout(hLayoutSpinBox);
+    vLayout->addLayout(hLayoutButtons);
+
+    return vLayout;
+}
+
 static QHBoxLayout* buttonPlace(MyGrid &myGrid, QWidget *widget, Grid &firstGrid, Grid &secondGrid, const State &cellState,
-    QTimer* timer, QLabel* lblGeneration, QLabel* lblLiveCells, std::size_t& generationCount) {
-    auto* btnStart = new QPushButton("start", widget);
-    auto* btnStop = new QPushButton("stop", widget);
-    auto* btnStep = new QPushButton("step", widget);
-    auto* btnClear = new QPushButton("clear", widget);
-    auto* btnRandom = new QPushButton("random", widget);
+    QTimer* timer, QLabel* lblGeneration, QLabel* lblLiveCells, std::size_t& generationCount, QSpinBox* densityControl) {
+    auto* btnStart = new QPushButton("Запуск", widget);
+    auto* btnStop = new QPushButton("Остановить", widget);
+    auto* btnStep = new QPushButton("Шаг", widget);
+    auto* btnClear = new QPushButton("Очистить", widget);
+    auto* btnRandom = new QPushButton("Рандом", widget);
 
     QObject::connect(timer, &QTimer::timeout, widget, [&, lblGeneration, lblLiveCells] {
         performGridStep(myGrid, firstGrid, secondGrid, cellState);
@@ -145,10 +181,10 @@ static QHBoxLayout* buttonPlace(MyGrid &myGrid, QWidget *widget, Grid &firstGrid
         configureLiveCellStatistics(lblLiveCells, firstGrid, cellState);
     });
 
-    QPushButton::connect(btnRandom, &QPushButton::clicked, widget, [&, timer, lblGeneration, lblLiveCells] {
+    QPushButton::connect(btnRandom, &QPushButton::clicked, widget, [&, timer, lblGeneration, lblLiveCells, densityControl] {
         std::cout << "random" << std::endl;
         timer->stop();
-        randomizeGridScene(myGrid, firstGrid, cellState);
+        randomizeGridScene(myGrid, firstGrid, cellState, densityControl->value());
         generationCount = 0;
         configureGenerationStatistics(lblGeneration, generationCount);
         configureLiveCellStatistics(lblLiveCells, firstGrid, cellState);
@@ -167,9 +203,9 @@ static QHBoxLayout* buttonPlace(MyGrid &myGrid, QWidget *widget, Grid &firstGrid
 
 static QHBoxLayout* patternPlace(MyGrid& myGrid, QWidget *widget, Grid& firstGrid, Grid& secondGrid, const State& cellState,
     QTimer* timer, QLabel* lblGeneration, QLabel* lblLiveCells, std::size_t& generationCount) {
-    auto* btnBlock = new QPushButton("block", widget);
-    auto* btnBlinker = new QPushButton("blinker", widget);
-    auto* btnGlider = new QPushButton("glider", widget);
+    auto* btnBlock = new QPushButton("Блок", widget);
+    auto* btnBlinker = new QPushButton("Мигалка", widget);
+    auto* btnGlider = new QPushButton("Планер", widget);
 
     QPushButton::connect(btnBlock, &QPushButton::clicked, widget, [&, timer, lblGeneration, lblLiveCells] {
         timer->stop();
@@ -209,14 +245,15 @@ static QHBoxLayout* patternPlace(MyGrid& myGrid, QWidget *widget, Grid& firstGri
 
 static void placeWidgets(QWidget* widget, MyGrid* myGrid, Grid* firstGrid, Grid* secondGrid, const State* cellState,
     QTimer* timer, QLabel* lblGeneration, QLabel* lblLiveCells, std::size_t& generationCount,
-    QGraphicsView* view, QVBoxLayout* layout) {
+    QSpinBox* densityControl, QGraphicsView* view, QVBoxLayout* layout) {
     createGridScene(myGrid);
     view->setScene(myGrid);
 
     layout->addWidget(view);
 
     layout->addLayout(statisticPlace(*firstGrid, *cellState, lblGeneration, lblLiveCells, generationCount));
-    layout->addLayout(buttonPlace(*myGrid, widget, *firstGrid, *secondGrid, *cellState, timer, lblGeneration, lblLiveCells, generationCount));
+    layout->addLayout(densityControlPlace(densityControl, widget));
+    layout->addLayout(buttonPlace(*myGrid, widget, *firstGrid, *secondGrid, *cellState, timer, lblGeneration, lblLiveCells, generationCount, densityControl));
     layout->addLayout(patternPlace(*myGrid, widget, *firstGrid, *secondGrid, *cellState, timer, lblGeneration, lblLiveCells, generationCount));
 }
 
@@ -231,6 +268,7 @@ int main(int argc, char *argv[]) {
     auto* lblGeneration = new QLabel(&window);
     auto* lblLiveCells = new QLabel(&window);
     std::size_t generationCount = 0;
+    auto* densityControl = new QSpinBox;
 
     Grid firstGrid;
     firstGrid.setGrid(N, N);
@@ -244,7 +282,7 @@ int main(int argc, char *argv[]) {
     auto* mainLayout = new QVBoxLayout;
 
     window.setLayout(mainLayout);
-    placeWidgets(&window, &mainGrid, &firstGrid, &secondGrid, &cellState, timer, lblGeneration, lblLiveCells, generationCount, &mainView, mainLayout);
+    placeWidgets(&window, &mainGrid, &firstGrid, &secondGrid, &cellState, timer, lblGeneration, lblLiveCells, generationCount, densityControl, &mainView, mainLayout);
 
     window.show();
     return QApplication::exec();

@@ -41,12 +41,12 @@ void clearGridScene(QGraphicsScene& myGrid, Grid &firstGrid, Grid &secondGrid, c
     updateGridScene(myGrid, firstGrid, cellState);
 }
 
-void randomizeGridScene(QGraphicsScene& myGrid, Grid &grid, const State &cellState) {
+void randomizeGridScene(QGraphicsScene& myGrid, Grid &grid, const State &cellState, int density) {
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++) {
-            int randomNumber = QRandomGenerator::global()->bounded(100);
+            const int randomNumber = QRandomGenerator::global()->bounded(100);
 
-            if (randomNumber < DENSITY) {
+            if (randomNumber < density) {
                 grid.setLiveCells(i, j, cellState);
             } else {
                 grid.setDeadCells(i, j, cellState);
