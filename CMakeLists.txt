@@ -29,3 +29,11 @@ target_link_libraries(gameOfConwayLife
         Qt::Widgets
 )
 
+enable_testing()
+
+add_executable(gameOfConwayLifeTests Tests.cpp)
+
+add_test(
+        NAME ConwayTests
+        COMMAND gameOfConwayLifeTests
+)
